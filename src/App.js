@@ -1,24 +1,65 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from "react";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import lib from "./lib/lib.js";
+import Navbar from "./partials/Navbar.js";
+import Footer from "./partials/Footer.js";
+import Home from "./pages/Home.js";
+
+// const toastr = require("./lib/toastr-custom");
+
+import toastr from 'toastr';
+
+
 
 function App() {
+  const [isLoading, setIsLoading] = useState(false);
+  const [AcctAuth, setAcctAuth] = useState(null);
+  
+  // toastr.options = {
+  //   "closeButton": false,
+  //   "debug": false,
+  //   "newestOnTop": false,
+  //   "progressBar": false,
+  //   "positionClass": "toast-top-right",
+  //   "preventDuplicates": false,
+  //   "onclick": null,
+  //   "showDuration": "300",
+  //   "hideDuration": "1000",
+  //   "timeOut": "5000",
+  //   "extendedTimeOut": "1000",
+  //   "showEasing": "swing",
+  //   "hideEasing": "linear",
+  //   "showMethod": "fadeIn",
+  //   "hideMethod": "fadeOut"
+  // };
+
+  // Every funtn inside, will run on every render and re-render of this component.
+  useEffect(() => {
+    async function on_load() {
+
+      // check for metamask
+      let eth_browser = await lib.loadWeb3();
+      if (eth_browser === false) {
+        // console.log(toastr)
+        // toastr.warning("Non Ethereum Browser detected! Consider using Metamask.");
+        return;
+      }
+
+      // Load account address
+      let accounts = await lib.loadAccounts();
+      console.log(accounts);
+    }
+    on_load();
+  }, [AcctAuth]);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Navbar />
+      <Switch>
+        <Route path="/" isLoading={setIsLoading} component={Home} exact />
+      </Switch>
+      <Footer />
+    </Router>
   );
 }
 
